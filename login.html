@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        input {
+            padding: 12px;
+            margin: 10px;
+            width: 250px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 12px 25px;
+            background-color: green;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: darkgreen;
+        }
+
+        #msg {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        #attempts {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Login</h2>
+
+<input type="text" id="username" placeholder="Enter Email"><br>
+<input type="password" placeholder="Enter Password"><br>
+
+<button id="loginBtn" onclick="login()">Login</button>
+
+<p id="attempts">Attempts: 0</p>
+<p id="msg"></p>
+
+<script>
+let attempts = 0;
+let blocked = false;
+
+function login() {
+
+    if (blocked) return;
+
+    let username = document.getElementById("username").value;
+    attempts++;
+
+    // Show attempts
+    document.getElementById("attempts").innerText = "Attempts: " + attempts;
+
+    // Show processing message
+    document.getElementById("msg").innerText = "Processing login...";
+
+    // Block after 5 attempts
+    if (attempts >= 5) {
+        blocked = true;
+
+        document.getElementById("loginBtn").disabled = true;
+        document.getElementById("loginBtn").style.backgroundColor = "red";
+
+        document.getElementById("msg").innerText = "Account Locked due to suspicious activity";
+    }
+
+    // Send data to n8n
+    fetch(`http://localhost:5678/webhook-test/login?username=${username}&failed_attempts=${attempts}&device=web&location=Pakistan`)
+    .then(res => res.text())
+    .then(data => {
+
+        if (blocked) return;
+
+        // Show invalid login if not blocked
+        document.getElementById("msg").innerText = "Invalid credentials";
+
+        console.log("Server response:", data);
+    });
+}
+</script>
+
+</body>
+</html>
