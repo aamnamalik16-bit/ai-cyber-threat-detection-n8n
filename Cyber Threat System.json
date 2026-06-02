@@ -1,0 +1,454 @@
+{
+  "name": "Cyber Threat System",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "login",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -9088,
+        -1472
+      ],
+      "id": "1247bc57-70b2-479c-bcb7-e35b6ed01586",
+      "name": "Webhook",
+      "webhookId": "a1372d7c-5ab2-4d81-9c12-30c3969493d4"
+    },
+    {
+      "parameters": {
+        "sendTo": "aamnamalik16@gmail.com",
+        "subject": "Cyber Threat Alert!",
+        "message": "=Cyber Threat Detected!\n\nUsername: {{$node[\"Required Fields\"].json[\"username\"]}}\n\nThreat Type: {{$node[\"Open AI\"].json.output[0].content[0].text.threat_type}}\n\nThreat Level: {{$node[\"Open AI\"].json.output[0].content[0].text.threat_level}}\n\nAction: {{$node[\"Open AI\"].json.output[0].content[0].text.action}}\n\n⚠️ Immediate attention required!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -7808,
+        -1424
+      ],
+      "id": "302819de-87e7-407d-bb38-72444d4d528c",
+      "name": "Email Alert",
+      "webhookId": "b23b425e-add1-48d8-8768-b160941ab27e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "thazOh9BoKrBmTyV",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Return ONLY valid JSON. No explanation.\n\nIf failed_attempts = 1:\n- status = \"suspicious\"\n- threat_type = \"Brute force attempt\"\n- threat_level = \"high\"\n- action = \"Lock account & Send Alert\"\n\nElse:\n- status = \"normal\"\n- threat_type = \"none\"\n- threat_level = \"low\"\n- action = \"allow login\"\n\nfailed_attempts: {{$json[\"failed_attempts\"]}}"
+            }
+          ]
+        },
+        "simplify": false,
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_object"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        -8416,
+        -1152
+      ],
+      "id": "7ed40889-4d76-486a-a3a0-61dc1f51443e",
+      "name": "Open AI",
+      "credentials": {
+        "openAiApi": {
+          "id": "M0uNmFkq9NWcZCqx",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"{{$json.output[0].content[0].text.status}}\",\n  \"action\": \"{{$json.output[0].content[0].text.action}}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -7600,
+        -976
+      ],
+      "id": "50058ce2-a062-480a-832c-86feee667835",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b561e7ea-e26c-4596-bc70-9a33e9b3e702",
+              "name": "username",
+              "value": "={{$json[\"query\"][\"username\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "26b4f631-1bd3-40c2-8f39-588a41bcb9b2",
+              "name": "failed_attempts",
+              "value": "=1",
+              "type": "number"
+            },
+            {
+              "id": "4a4e67b1-3e90-4c9a-99f4-0e49bdefc6e8",
+              "name": "device",
+              "value": "={{$json[\"query\"][\"device\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "d5723403-b1d4-4f76-82ce-b1afc1aee368",
+              "name": "location",
+              "value": "={{$json[\"query\"][\"location\"]}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -8864,
+        -1264
+      ],
+      "id": "aa8fde2b-8065-49cc-9782-13acc20bce79",
+      "name": "Required Fields"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1M24spq9a-_m07feIILM0RNAbuhgFs9arhrplCQ86rzc",
+          "mode": "list",
+          "cachedResultName": "Cyber Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1M24spq9a-_m07feIILM0RNAbuhgFs9arhrplCQ86rzc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1M24spq9a-_m07feIILM0RNAbuhgFs9arhrplCQ86rzc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "useername": "={{$node[\"Required Fields\"].json[\"username\"]}}",
+            "threat_type": "={{ $node[\"Open AI\"].json.output[0].content[0].text.threat_type }}",
+            "threat_level": "={{ $node[\"Open AI\"].json.output[0].content[0].text.threat_level }}",
+            "status": "={{ $node[\"Open AI\"].json.output[0].content[0].text.status }}",
+            "action": "={{ $node[\"Open AI\"].json.output[0].content[0].text.action }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "useername",
+              "displayName": "useername",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "threat_type",
+              "displayName": "threat_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "threat_level",
+              "displayName": "threat_level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "action",
+              "displayName": "action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -7808,
+        -1104
+      ],
+      "id": "0178ede8-25ca-4bab-80df-70c319cf45e8",
+      "name": "Storing Action",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "HNJh5GFZxc1GlIk0",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8555836279",
+        "text": "=Cyber Threat Detected!\n\nUsername: {{$node[\"Required Fields\"].json[\"username\"]}}\nThreat Type: {{$node[\"Open AI\"].json.output[0].content[0].text.threat_type}}\nThreat Level: {{$node[\"Open AI\"].json.output[0].content[0].text.threat_level}}\nAction: {{$node[\"Open AI\"].json.output[0].content[0].text.action}}\n\n⚠️ Immediate attention required!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -7808,
+        -1264
+      ],
+      "id": "3f776195-cca5-4f28-9b9c-408a9beb4117",
+      "name": "Message Bot Alert",
+      "webhookId": "1c20dce4-430b-4eb6-a5c8-b718b6783338",
+      "credentials": {
+        "telegramApi": {
+          "id": "JsTgumAAOPnwS2sz",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4fa78c4e-89d7-48ec-8918-d80c76bfd835",
+              "leftValue": "={{ $json.failed_attempts }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -8656,
+        -1264
+      ],
+      "id": "0800f006-3506-46a8-ad9e-0ba62c943944",
+      "name": "IF (Attempt)"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "20ead8ed-bffb-4945-b647-0361d0dc7077",
+              "leftValue": "={{ $node[\"Open AI\"].json.output[0].content[0].text.threat_level }}",
+              "rightValue": "high",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -8144,
+        -1312
+      ],
+      "id": "43a49f3c-392f-4915-8e0a-740fb4271112",
+      "name": "IF (Risk)"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -8720,
+        -944
+      ],
+      "id": "5cc14e06-e5ba-4c7f-bd02-d47a0e4d2802",
+      "name": "When clicking ‘Execute workflow’"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Required Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Alert": {
+      "main": [
+        []
+      ]
+    },
+    "Open AI": {
+      "main": [
+        [
+          {
+            "node": "IF (Risk)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Storing Action",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        []
+      ]
+    },
+    "Required Fields": {
+      "main": [
+        [
+          {
+            "node": "IF (Attempt)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Storing Action": {
+      "main": [
+        []
+      ]
+    },
+    "IF (Attempt)": {
+      "main": [
+        [
+          {
+            "node": "Open AI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Open AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF (Risk)": {
+      "main": [
+        [
+          {
+            "node": "Email Alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Message Bot Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        []
+      ]
+    },
+    "Message Bot Alert": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "4f7392d0-65e0-4b91-a012-be52329ada5e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "079c8c23779b55eeaf8b3e379d791cc33dbc3d54c1bad4a6f6db2da3245cf482"
+  },
+  "id": "kv0qnDFF247cpd7L",
+  "tags": []
+}
